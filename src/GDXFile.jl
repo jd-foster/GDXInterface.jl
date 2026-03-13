@@ -664,6 +664,7 @@ function _to_gdx_value(val::Float64)
     isnan(val) && return GAMS_SV_NA
     val == Inf && return GAMS_SV_PINF
     val == -Inf && return GAMS_SV_MINF
+    iszero(val) && signbit(val) && return GAMS_SV_EPS
     return val
 end
 

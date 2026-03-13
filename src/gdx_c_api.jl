@@ -52,7 +52,7 @@ function parse_gdx_value(val::Float64)
         return -Inf
     end
     if val == GAMS_SV_EPS
-        return 0.0  # GAMS EPS represents "explicitly zero" in sparse data
+        return -0.0
     end
     return val
 end

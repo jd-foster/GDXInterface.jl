@@ -176,7 +176,7 @@ execute_unload "gams_gdx_test.gdx", i, p, x, y;
     end
 
     @testset "Special values round-trip" begin
-        df = DataFrame(i = ["a", "b", "c", "d"], value = [NaN, Inf, -Inf, 42.0])
+        df = DataFrame(i = ["a", "b", "c", "d", "e"], value = [NaN, Inf, -Inf, 42.0, -0.0])
         outfile = joinpath(tempdir(), "gdx_jl_special.gdx")
         write_gdx(outfile, "special" => df)
 
@@ -186,6 +186,7 @@ execute_unload "gams_gdx_test.gdx", i, p, x, y;
         @test result.value[2] == Inf
         @test result.value[3] == -Inf
         @test result.value[4] == 42.0
+        @test result.value[5] === -0.0
 
         rm(outfile, force=true)
     end

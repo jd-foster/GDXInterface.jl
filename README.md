@@ -140,11 +140,11 @@ GAMS special values are mapped to Julia equivalents when reading:
 | `NA` | `NaN` | Not available |
 | `+INF` | `Inf` | Positive infinity |
 | `-INF` | `-Inf` | Negative infinity |
-| `EPS` | `0.0` | "Explicitly zero" in sparse data |
+| `EPS` | `-0.0` | "Explicitly zero" in sparse data |
 
 When writing, `NaN` maps to GAMS `NA`, `Inf`/`-Inf` map to `+INF`/`-INF`,
-and `0.0` stays as a regular zero. GAMS `EPS` semantics (distinguishing
-explicit zeros from structural zeros) are not preserved through a round-trip.
+and `-0.0` maps back to GAMS `EPS`. This preserves EPS semantics through
+round-trips. Regular `0.0` stays as a normal zero.
 
 ## Acknowledgments
 
