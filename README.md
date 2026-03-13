@@ -6,7 +6,10 @@ High-level Julia interface for reading and writing
 
 Uses the [`gdx_jll`](https://github.com/jd-foster/gdx_jll.jl) package to
 provide the GDX C library independently of GAMS.
+
 **No GAMS installation required.**
+
+For more information on the GDX file format, see: [GDX source code published on GitHub](https://www.gams.com/blog/2023/12/gdx-source-code-published-on-github/)
 
 ## Installation
 
