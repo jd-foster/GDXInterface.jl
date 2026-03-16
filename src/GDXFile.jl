@@ -539,6 +539,12 @@ function write_gdx(filepath::String, symbols::Pair{String, DataFrames.DataFrame}
     return filepath
 end
 
+function _set_domain_x(gdx::GDXHandle, name::String, domain::Vector{String}, dim::Int)
+    length(domain) == dim && dim > 0 || return
+    found, sym_nr = gdx_find_symbol(gdx, name)
+    found && gdx_symbol_set_domain_x(gdx, sym_nr, domain)
+end
+
 # Type dispatch for writing symbols
 _write_symbol(gdx::GDXHandle, sym::GDXSet) = _write_set(gdx, sym)
 _write_symbol(gdx::GDXHandle, sym::GDXParameter) = _write_parameter(gdx, sym)
@@ -572,13 +578,14 @@ function _write_set(gdx::GDXHandle, sym::GDXSet)
     end
 
     gdx_data_write_done(gdx)
+    _set_domain_x(gdx, sym.name, sym.domain, dim)
 end
 
 function _write_parameter(gdx::GDXHandle, sym::GDXParameter)
-    _write_parameter_df(gdx, sym.name, sym.records, sym.description)
+    _write_parameter_df(gdx, sym.name, sym.records, sym.description, sym.domain)
 end
 
-function _write_parameter_df(gdx::GDXHandle, name::String, df::DataFrames.DataFrame, description::String="")
+function _write_parameter_df(gdx::GDXHandle, name::String, df::DataFrames.DataFrame, description::String="", domain::Vector{String}=String[])
     dim_cols = [n for n in names(df) if n != "value"]
     dim = length(dim_cols)
 
@@ -596,6 +603,7 @@ function _write_parameter_df(gdx::GDXHandle, name::String, df::DataFrames.DataFr
     end
 
     gdx_data_write_done(gdx)
+    _set_domain_x(gdx, name, domain, dim)
 end
 
 const _VAR_EQU_COLS = Set(["level", "marginal", "lower", "upper", "scale"])
@@ -623,6 +631,7 @@ function _write_variable(gdx::GDXHandle, sym::GDXVariable)
     end
 
     gdx_data_write_done(gdx)
+    _set_domain_x(gdx, sym.name, sym.domain, dim)
 end
 
 function _write_equation(gdx::GDXHandle, sym::GDXEquation)
@@ -648,6 +657,7 @@ function _write_equation(gdx::GDXHandle, sym::GDXEquation)
     end
 
     gdx_data_write_done(gdx)
+    _set_domain_x(gdx, sym.name, sym.domain, dim)
 end
 
 # =============================================================================

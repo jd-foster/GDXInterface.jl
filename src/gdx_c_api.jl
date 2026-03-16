@@ -281,6 +281,22 @@ function gdx_symbol_get_domain_x(gdx::GDXHandle, sym_nr::Int, dim::Int)
     return domains
 end
 
+function gdx_symbol_set_domain_x(gdx_ptr::Ptr{Cvoid}, sym_nr::Int, domain_ids::Vector{String})
+    return ccall(
+        (@cpfx(:gdxsymbolsetdomainx), LIBGDX),
+        Cint,
+        (Ptr{Cvoid}, Cint, Ptr{Cstring}),
+        gdx_ptr,
+        sym_nr,
+        domain_ids,
+    )
+end
+
+function gdx_symbol_set_domain_x(gdx::GDXHandle, sym_nr::Int, domain_ids::Vector{String})
+    rc = gdx_symbol_set_domain_x(gdx.cptr[], sym_nr, domain_ids)
+    return rc
+end
+
 # =============================================================================
 # Alias
 # =============================================================================

@@ -412,4 +412,114 @@ execute_unload "gams_gdx_test.gdx", i, p, x, y;
         show(io, a)
         @test occursin("j", String(take!(io)))
     end
+
+    @testset "Domain preservation on round-trip (issue #3)" begin
+        set_df = DataFrame(i = ["a", "b", "c"])
+        s = GDXSet("i", "index set", ["*"], set_df)
+        par_df = DataFrame(i = ["a", "b", "c"], value = [10.0, 20.0, 30.0])
+        p = GDXParameter("x", "A parameter over i", ["i"], par_df)
+        gdxfile = GDXFile("", Dict{Symbol,GDXSymbol}(:i => s, :x => p))
+
+        outfile = joinpath(tempdir(), "gdx_jl_domain_test.gdx")
+        write_gdx(outfile, gdxfile)
+
+        gdx2 = read_gdx(outfile)
+        x2 = get_symbol(gdx2, :x)
+        @test x2.domain == ["i"]
+        @test names(gdx2[:x])[1] == "i"
+
+        rm(outfile, force=true)
+    end
+
+    @testset "Domain preservation for variables (issue #3)" begin
+        set_df = DataFrame(i = ["a", "b", "c"])
+        s = GDXSet("i", "index set", ["*"], set_df)
+        var_df = DataFrame(
+            i = ["a", "b", "c"],
+            level = [1.0, 2.0, 3.0],
+            marginal = [0.0, 0.0, 0.0],
+            lower = [-Inf, -Inf, -Inf],
+            upper = [Inf, Inf, Inf],
+            scale = [1.0, 1.0, 1.0]
+        )
+        v = GDXVariable("y", "A variable over i", ["i"], VarFree, var_df)
+        gdxfile = GDXFile("", Dict{Symbol,GDXSymbol}(:i => s, :y => v))
+
+        outfile = joinpath(tempdir(), "gdx_jl_domain_var_test.gdx")
+        write_gdx(outfile, gdxfile)
+
+        gdx2 = read_gdx(outfile)
+        y2 = get_symbol(gdx2, :y)
+        @test y2.domain == ["i"]
+        @test names(gdx2[:y])[1] == "i"
+
+        rm(outfile, force=true)
+    end
+
+    @testset "Domain preservation for equations (issue #3)" begin
+        set_df = DataFrame(i = ["a", "b"])
+        s = GDXSet("i", "index set", ["*"], set_df)
+        eq_df = DataFrame(
+            i = ["a", "b"],
+            level = [1.0, 2.0],
+            marginal = [0.5, 0.6],
+            lower = [-Inf, -Inf],
+            upper = [Inf, Inf],
+            scale = [1.0, 1.0]
+        )
+        eq = GDXEquation("myeq", "test eq", ["i"], EqE, eq_df)
+        gdxfile = GDXFile("", Dict{Symbol,GDXSymbol}(:i => s, :myeq => eq))
+
+        outfile = joinpath(tempdir(), "gdx_jl_domain_eq_test.gdx")
+        write_gdx(outfile, gdxfile)
+
+        gdx2 = read_gdx(outfile)
+        eq2 = get_symbol(gdx2, :myeq)
+        @test eq2.domain == ["i"]
+        @test names(gdx2[:myeq])[1] == "i"
+
+        rm(outfile, force=true)
+    end
+
+    @testset "Multi-dimensional domain preservation (issue #3)" begin
+        si = GDXSet("i", "rows", ["*"], DataFrame(i = ["a", "b"]))
+        sj = GDXSet("j", "cols", ["*"], DataFrame(j = ["x", "y"]))
+        par_df = DataFrame(
+            i = ["a", "a", "b", "b"],
+            j = ["x", "y", "x", "y"],
+            value = [1.0, 2.0, 3.0, 4.0]
+        )
+        p = GDXParameter("cost", "transport cost", ["i", "j"], par_df)
+        gdxfile = GDXFile("", Dict{Symbol,GDXSymbol}(:i => si, :j => sj, :cost => p))
+
+        outfile = joinpath(tempdir(), "gdx_jl_domain_2d_test.gdx")
+        write_gdx(outfile, gdxfile)
+
+        gdx2 = read_gdx(outfile)
+        cost2 = get_symbol(gdx2, :cost)
+        @test cost2.domain == ["i", "j"]
+        @test names(gdx2[:cost])[1:2] == ["i", "j"]
+
+        rm(outfile, force=true)
+    end
+
+    @testset "Domain preservation with GAMS-generated file (issue #3)" begin
+        gdx1 = read_gdx(test_gdx)
+
+        p1 = get_symbol(gdx1, :p)
+        original_domain = p1.domain
+
+        outfile = joinpath(tempdir(), "gdx_jl_gams_domain_rt.gdx")
+        write_gdx(outfile, gdx1)
+
+        gdx2 = read_gdx(outfile)
+        p2 = get_symbol(gdx2, :p)
+        @test p2.domain == original_domain
+
+        x1 = get_symbol(gdx1, :x)
+        x2 = get_symbol(gdx2, :x)
+        @test x2.domain == x1.domain
+
+        rm(outfile, force=true)
+    end
 end
