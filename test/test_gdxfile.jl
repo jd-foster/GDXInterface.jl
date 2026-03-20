@@ -522,4 +522,24 @@ execute_unload "gams_gdx_test.gdx", i, p, x, y;
 
         rm(outfile, force=true)
     end
+
+
+    @testset "Setting symbols via indexing" begin
+        gdxfile = GDXFile("")
+
+        df = DataFrame(i = ["a", "b"], value = [1.0, 2.0])
+        p = GDXParameter("p", "test param", ["i"], df)
+        gdxfile[:p] = p
+
+        @test :p in list_parameters(gdxfile)
+        @test gdxfile[:p].value == [1.0, 2.0]
+
+        # String keys should also work
+        df2 = DataFrame(j = ["x", "y"], value = [3.0, 4.0])
+        p2 = GDXParameter("q", "another param", ["j"], df2)
+        gdxfile["q"] = p2
+
+        @test :q in list_parameters(gdxfile)
+        @test gdxfile[:q].value == [3.0, 4.0]
+    end
 end

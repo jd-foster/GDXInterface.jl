@@ -145,6 +145,10 @@ function GDXFile(path::String, symbols::Dict{Symbol, <:GDXSymbol})
     return gdx
 end
 
+function GDXFile(path::String)
+    return GDXFile(path, Dict{Symbol, GDXSymbol}(), Symbol[])
+end
+
 function _insert!(gdx::GDXFile, key::Symbol, sym::GDXSymbol)
     lk = _symkey(key)
     if !haskey(gdx._symbols, lk)
@@ -199,6 +203,10 @@ Base.getindex(gdx::GDXFile, sym::String) = gdx[Symbol(sym)]
 Base.haskey(gdx::GDXFile, sym::Symbol) = haskey(gdx._symbols, _symkey(sym))
 Base.keys(gdx::GDXFile) = Symbol[Symbol(gdx._symbols[k].name) for k in gdx._order]
 Base.length(gdx::GDXFile) = length(gdx._order)
+
+# Dictionary-like setting (inserts or updates symbols)
+Base.setindex!(gdx::GDXFile, sym::GDXSymbol, key::Symbol) = _insert!(gdx, key, sym)
+Base.setindex!(gdx::GDXFile, sym::GDXSymbol, key::String) = _insert!(gdx, Symbol(key), sym)
 
 function Base.iterate(gdx::GDXFile)
     isempty(gdx._order) && return nothing
