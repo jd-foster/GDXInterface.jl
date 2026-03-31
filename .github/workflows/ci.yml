@@ -44,7 +44,5 @@ jobs:
           version: ${{ matrix.version }}
           arch: ${{ matrix.arch }}
       - uses: julia-actions/cache@v3
-      - name: Add unregistered dependencies
-        run: julia -e 'using Pkg; Pkg.activate("."); Pkg.add(url="https://github.com/jd-foster/gdx_jll.jl.git")'
       - uses: julia-actions/julia-buildpkg@v1
       - uses: julia-actions/julia-runtest@v1

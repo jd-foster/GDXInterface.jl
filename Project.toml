@@ -1,6 +1,6 @@
 name = "GDXInterface"
 uuid = "b8352055-3412-4df1-864e-ee7edae71aec"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Martin Kirk Bonde", "James Daniel Foster"]
 
 [deps]
@@ -9,7 +9,7 @@ gdx_jll = "aa021fa7-5c7d-5dc1-9fa7-c90cd282ac20"
 
 [compat]
 DataFrames = "1"
-gdx_jll = "7.11.19"
+gdx_jll = "7.11.20"
 julia = "1.6"
 
 [extras]
