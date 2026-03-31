@@ -4,7 +4,7 @@ High-level Julia interface for reading and writing
 [GDX files](https://gams-dev.github.io/gdx/index.html)
 (GAMS Data Exchange).
 
-Uses the [`gdx_jll`](https://github.com/jd-foster/gdx_jll.jl) package to
+Uses the [`gdx_jll`](https://github.com/JuliaBinaryWrappers/gdx_jll.jl.git) package to
 provide the GDX C library independently of GAMS.
 
 **No GAMS installation required.**
@@ -15,14 +15,14 @@ For more information on the GDX file format, see: [GDX source code published on 
 
 ```julia
 using Pkg
-Pkg.add(url="https://github.com/jd-foster/gdx_jll.jl.git")
+Pkg.add(url="https://github.com/JuliaBinaryWrappers/gdx_jll.jl.git")
 Pkg.add(url="https://github.com/jd-foster/GDXInterface.jl.git")
 ```
 
 Or in the Pkg REPL:
 
 ```
-pkg> add https://github.com/jd-foster/gdx_jll.jl.git
+pkg> add https://github.com/JuliaBinaryWrappers/gdx_jll.jl.git
 pkg> add https://github.com/jd-foster/GDXInterface.jl.git
 ```
 

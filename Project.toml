@@ -9,7 +9,7 @@ gdx_jll = "aa021fa7-5c7d-5dc1-9fa7-c90cd282ac20"
 
 [compat]
 DataFrames = "1"
-gdx_jll = "7.11.19"
+gdx_jll = "7.11.20"
 julia = "1.6"
 
 [extras]
